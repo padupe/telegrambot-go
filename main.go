@@ -23,43 +23,67 @@ func main() {
 
 	bot.Debug = true
 
-	// Create a new UpdateConfig struct with an offset of 0. Offsets are used
-	// to make sure Telegram knows we've handled previous values and we don't
-	// need them repeated.
+	// Cria uma nova estrutura UpdateConfig com um deslocamento de 0. Offsets são usados
+	// para garantir que o Telegram saiba que tratamos dos valores anteriores e não
+	// precisa deles repetidos.
 	updateConfig := tgbotapi.NewUpdate(0)
 
-	// Tell Telegram we should wait up to 30 seconds on each request for an
-	// update. This way we can get information just as quickly as making many
-	// frequent requests without having to send nearly as many.
+	// Diga ao Telegram que devemos esperar até 30 segundos em cada solicitação de um
+	// update. Dessa forma, podemos obter informações tão rapidamente quanto fazer muitas
+	// solicitações frequentes sem ter que enviar quase a mesma quantidade.
 	updateConfig.Timeout = 30
 
-	// Start polling Telegram for updates.
+	// Comece a sondar o Telegram para verificar se houveram atualizações.
 	updates := bot.GetUpdatesChan(updateConfig)
 
-	// Let's go through each update that we're getting from Telegram.
+	// Vamos examinar cada atualização que recebemos do Telegram.
 	for update := range updates {
-		// Telegram can send many types of updates depending on what your Bot
-		// is up to. We only want to look at messages for now, so we can
-		// discard any other updates.
+		// O Telegram pode enviar muitos tipos de atualizações, dependendo do que o seu Bot
+		// está preparado para fazer. Queremos apenas olhar as mensagens por enquanto, para que possamos
+		// descartar quaisquer outras atualizações.
 		if update.Message == nil {
 			continue
 		}
 
-		// Now that we know we've gotten a new message, we can construct a
-		// reply! We'll take the Chat ID and Text from the incoming message
-		// and use it to create a new message.
+		// Agora que sabemos que recebemos uma nova mensagem, podemos construir uma
+		// resposta! Pegaremos o ID do bate-papo e o texto da mensagem recebida
+		// e usaremos para criar uma nova mensagem.
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		// We'll also say that this message is a reply to the previous message.
-		// For any other specifications than Chat ID or Text, you'll need to
-		// set fields on the `MessageConfig`.
+		// Também diremos que esta mensagem é uma resposta à mensagem anterior.
+		// Para quaisquer outras especificações além de ID de bate-papo ou Texto, você precisará
+		// define campos em `MessageConfig`.
 		msg.ReplyToMessageID = update.Message.MessageID
 
-		// Okay, we're sending our message off! We don't care about the message
-		// we just sent, so we'll discard it.
+		// Ok, estamos enviando nossa mensagem! Não nos importamos com a mensagem
+		// acabamos de enviar, então vamos descartá-la.
+
+		/*
+					TODO - Configurar o Bot para responder a comandos específicos
+					if !update.Message.IsCommand() { // ignore any non-command Messages
+			            continue
+			        }
+
+			        // Crie um novo MessageConfig. Ainda não temos texto,
+			        // então o deixamos vazio.
+			        msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+
+			        // Extraia o comando da Mensagem.
+			        switch update.Message.Command() {
+			        case "help":
+			            msg.Text = "I understand /sayhi and /status."
+			        case "sayhi":
+			            msg.Text = "Hi :)"
+			        case "status":
+			            msg.Text = "I'm ok."
+			        default:
+			            msg.Text = "I don't know that command"
+			        }
+		*/
+
 		if _, err := bot.Send(msg); err != nil {
-			// Note that panics are a bad way to handle errors. Telegram can
-			// have service outages or network errors, you should retry sending
-			// messages or more gracefully handle failures.
+			// Observe que os panics são uma maneira ruim de lidar com os erros. Telegram pode
+			// ter interrupções no serviço ou erros de rede, você deve tentar enviar novamente
+			// mensagens ou lidar de forma mais adequada com as falhas.
 			panic(err)
 		}
 	}
