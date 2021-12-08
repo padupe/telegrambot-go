@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -23,15 +24,23 @@ func main() {
 
 	bot.Debug = true
 
+	botName := bot.Self.UserName
+	fmt.Println("Nome do Bot", botName)
+
+	botUsername := bot.Self.FirstName + "" + bot.Self.LastName
+	fmt.Println("Nome de Usuário do Bot", botUsername)
+
 	// Cria uma nova estrutura UpdateConfig com um deslocamento de 0. Offsets são usados
 	// para garantir que o Telegram saiba que tratamos dos valores anteriores e não
 	// precisa deles repetidos.
 	updateConfig := tgbotapi.NewUpdate(0)
+	fmt.Println("1", updateConfig)
 
 	// Diga ao Telegram que devemos esperar até 30 segundos em cada solicitação de um
 	// update. Dessa forma, podemos obter informações tão rapidamente quanto fazer muitas
 	// solicitações frequentes sem ter que enviar quase a mesma quantidade.
 	updateConfig.Timeout = 30
+	fmt.Println("2", updateConfig.Timeout)
 
 	// Comece a sondar o Telegram para verificar se houveram atualizações.
 	updates := bot.GetUpdatesChan(updateConfig)
@@ -45,14 +54,21 @@ func main() {
 			continue
 		}
 
+		username := update.Message.Chat.FirstName
+		fmt.Println("Username:", username)
+
 		// Agora que sabemos que recebemos uma nova mensagem, podemos construir uma
 		// resposta! Pegaremos o ID do bate-papo e o texto da mensagem recebida
 		// e usaremos para criar uma nova mensagem.
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+		fmt.Println("Id do Usuário e Texto da Mensagem", msg)
 		// Também diremos que esta mensagem é uma resposta à mensagem anterior.
 		// Para quaisquer outras especificações além de ID de bate-papo ou Texto, você precisará
 		// define campos em `MessageConfig`.
+
 		msg.ReplyToMessageID = update.Message.MessageID
+		fmt.Println("ID da Mensagem", msg.ReplyToMessageID)
+		fmt.Println("Responder para Mensagem", update.Message.MessageID)
 
 		// Ok, estamos enviando nossa mensagem! Não nos importamos com a mensagem
 		// acabamos de enviar, então vamos descartá-la.
