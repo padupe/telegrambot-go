@@ -35,12 +35,26 @@ type Update struct {
 }
 
 type Message struct {
-	Text string `json:"text"`
-	Chat string `json:"chat"`
+	Text     string   `json:"text"`
+	Chat     string   `json:"chat"`
+	Audio    Audio    `json:"audio"`
+	Voice    Voice    `json:"voice"`
+	Document Document `json:"document"`
 }
 
+type Audio struct {
+	FileId   string `json:"file_id"`
+	Duration int    `json:"duration"`
+}
 type Chat struct {
 	Id int `json:"id"`
+}
+
+type Voice Audio
+
+type Document struct {
+	FileId   string `json:"file_id"`
+	FileName string `json:"file_name"`
 }
 
 // sanitize remove comandos /start /punch ou o nome do próprio Bot
@@ -62,6 +76,14 @@ func sanitize(s string) string {
 		}
 	}
 	return s
+}
+
+func (m Message) String() string {
+	return fmt.Sprintf("(text: %s, chat: %s, audio %s)", m.Text, m.Chat, m.Audio)
+}
+
+func (a Audio) String() string {
+	return fmt.Sprintf("(file id: %s, duration: %d)", a.FileId, a.Duration)
 }
 
 func parseTelegramRequest(req *http.Request) (*Update, error) {
