@@ -46,12 +46,12 @@ func main() {
 			continue
 		}
 
+		txt := "Seja bem-vindo!"
 		// fmt.Println("Será que é um CEP?", cep)
 		// Nome do Usuário que está converando com o Bot
-		username := update.Message.Chat.FirstName
-		fmt.Println("Username:", username)
+		// username := update.Message.Chat.FirstName
 
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, txt)
 
 		msg.ReplyToMessageID = update.Message.MessageID
 
