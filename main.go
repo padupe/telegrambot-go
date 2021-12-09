@@ -24,6 +24,8 @@ func main() {
 
 	bot.Debug = true
 
+	log.Printf("Authorize an account %s", bot.Self.UserName)
+
 	botName := bot.Self.UserName
 	fmt.Println("Nome do Bot", botName)
 
@@ -72,7 +74,8 @@ func main() {
 
 		// Ok, estamos enviando nossa mensagem! Não nos importamos com a mensagem
 		// acabamos de enviar, então vamos descartá-la.
-
+		bot.Send(msg)
+		// tgbotapi.NewDeleteMessage(update.Message.Chat.ID)
 		/*
 					TODO - Configurar o Bot para responder a comandos específicos
 					if !update.Message.IsCommand() { // ignore any non-command Messages
@@ -96,12 +99,12 @@ func main() {
 			        }
 		*/
 
-		if _, err := bot.Send(msg); err != nil {
-			// Observe que os panics são uma maneira ruim de lidar com os erros. Telegram pode
-			// ter interrupções no serviço ou erros de rede, você deve tentar enviar novamente
-			// mensagens ou lidar de forma mais adequada com as falhas.
-			panic(err)
-		}
+		// if _, err := bot.Send(msg); err != nil {
+		// 	// Observe que os panics são uma maneira ruim de lidar com os erros. Telegram pode
+		// 	// ter interrupções no serviço ou erros de rede, você deve tentar enviar novamente
+		// 	// mensagens ou lidar de forma mais adequada com as falhas.
+		// 	panic(err)
+		// }
 	}
 
 }
