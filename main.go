@@ -41,12 +41,22 @@ func main() {
 
 	for update := range updates {
 
+		msgRec := update.Message.Text
+
 		if update.Message == nil {
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+			log.Printf("[%s] %s", update.Message.From.UserName, msgRec)
 			continue
+
 		}
 
-		txt := "Seja bem-vindo!"
+		username := update.Message.Chat.FirstName
+
+		txt := fmt.Sprintf("Seja bem-vindo %s!", username)
+		if len(msgRec) == 8 {
+			txt = fmt.Sprintf("%s, estamos pesquisando seu CEP", username)
+		} else {
+			txt = fmt.Sprintf("%s, informe um CEP válido", username)
+		}
 		// fmt.Println("Será que é um CEP?", cep)
 		// Nome do Usuário que está converando com o Bot
 		// username := update.Message.Chat.FirstName
