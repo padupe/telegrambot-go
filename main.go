@@ -3,6 +3,7 @@ package main
 import (
 	// "errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,20 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
 )
+
+type ReponseCEP struct {
+	Cep         string `json:"cep"`
+	Logradouro  string `json:"logradouro"`
+	Bairro      string `json:"bairro"`
+	Complemento string `json:"complemento"`
+	Cidade      string `json:"localidade"`
+	Estado      string `json:"uf"`
+	Latitude    string `json:"latitude"`
+	Longitude   string `json:"longitude"`
+	DDD         string `json:"ddd"`
+	Unidade     string `json:"unidade"`
+	Ibge        string `json:"ibge"`
+}
 
 func main() {
 	err := godotenv.Load()
@@ -40,7 +55,7 @@ func main() {
 	updateConfig.Timeout = 30
 
 	updates := bot.GetUpdatesChan(updateConfig)
-	cep := nil
+	// var cep string = ""
 
 	for update := range updates {
 
@@ -57,9 +72,9 @@ func main() {
 		txt := fmt.Sprintf("Seja bem-vindo %s!", username)
 		if len(msgRec) == 8 {
 			txt = fmt.Sprintf("%s, estamos pesquisando seu CEP", username)
-			cep = msgRec
 
-			const buscaCep = getCep()
+			const buscaCep = getCep(msgRec)
+			txt = buscaCep
 
 		} else {
 			txt = fmt.Sprintf("%s, informe um CEP válido", username)
@@ -84,13 +99,21 @@ func main() {
 
 }
 
-func getCep(cep string, res http.ResponseWriter, req *http.Request) {
+func getCep(cep string) http.ResponseWriter {
 
-	res, err := http.Get("https://viacep.com.br/ws/%v/json/", cep)
+	baseURL := "https://viacep.com.br/ws/" + cep + "/json/"
 
+	response, err := http.Get(baseURL)
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
-	defer res.Body.Close()
+	defer response.Body.Close()
+
+	fmt.Println("Status Code: ", response.StatusCode)
+	fmt.Println("Content lengh is: ", response.ContentLength)
+
+	content, _ := ioutil.ReadAll(response.Body)
+
+	fmt.Println(string(content))
 }
