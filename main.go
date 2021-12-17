@@ -1,8 +1,10 @@
 package main
 
 import (
+	// "errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -38,6 +40,7 @@ func main() {
 	updateConfig.Timeout = 30
 
 	updates := bot.GetUpdatesChan(updateConfig)
+	cep := nil
 
 	for update := range updates {
 
@@ -54,6 +57,10 @@ func main() {
 		txt := fmt.Sprintf("Seja bem-vindo %s!", username)
 		if len(msgRec) == 8 {
 			txt = fmt.Sprintf("%s, estamos pesquisando seu CEP", username)
+			cep = msgRec
+
+			const buscaCep = getCep()
+
 		} else {
 			txt = fmt.Sprintf("%s, informe um CEP válido", username)
 		}
@@ -75,4 +82,15 @@ func main() {
 		// }
 	}
 
+}
+
+func getCep(cep string, res http.ResponseWriter, req *http.Request) {
+
+	res, err := http.Get("https://viacep.com.br/ws/%v/json/", cep)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer res.Body.Close()
 }
